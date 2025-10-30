@@ -702,3 +702,5 @@ plt.grid(True, axis='y', alpha=0.3, linestyle='--')
 
 plt.tight_layout()
 plt.savefig('graphique_3_pib_par_habitant.png', dpi=300, bbox_
+Pour inserer une phot, un graphique, un logo
+![Analyse statistique](image graphe.png)
