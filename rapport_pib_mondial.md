@@ -1,6 +1,9 @@
 # Rapport d'Analyse Approfondie du PIB Mondial
 ## Étude Comparative de 12 Économies Majeures (2015-2024)
 
+
+
+NOUHAILA EN-NAIDI
 ---
 
 **Auteur:** Service d'Analyse Économique Internationale  
