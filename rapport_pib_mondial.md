@@ -2,6 +2,7 @@
 ## Étude Comparative de 12 Économies Majeures (2015-2024)
 
 
+![Ma photo](images/WIN_20250616_21_00_40_Pro.jpg)
 
 NOUHAILA EN-NAIDI
 ---
