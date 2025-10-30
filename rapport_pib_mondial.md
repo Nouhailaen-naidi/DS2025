@@ -2,7 +2,9 @@
 ## Étude Comparative de 12 Économies Majeures (2015-2024)
 
 
-![Ma photo](images/WIN_20250616_21_00_40_Pro.jpg)
+<p align="center">
+  <img src="https://avatars.githubusercontent.com/u/195741889?s=400&u=4bb20204a9c611c2c355287f70273b2c0de055d8&v=4" alt="Photo de profil GitHub" width="200" style="border-radius:50%;">
+</p>
 
 NOUHAILA EN-NAIDI
 ---
