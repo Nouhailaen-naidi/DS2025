@@ -704,3 +704,7 @@ plt.tight_layout()
 plt.savefig('graphique_3_pib_par_habitant.png', dpi=300, bbox_
 Pour inserer une phot, un graphique, un logo
 ![Analyse statistique](image_graphe.png)
+<p align="center">
+  <img src="images/image_graphe.png" alt="Analyse statistique" width="400">
+</p>
+
