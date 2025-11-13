@@ -1,1 +1,294 @@
+# Recommandations boursières de ZZAlpha Ltd. (2012–2014)
+
+**Référence :** Pratt, K. (2015). *Machine Learning based ZZAlpha Ltd. Stock Recommendations 2012-2014* [Dataset]. UCI Machine Learning Repository. DOI: `10.24432/C59W3S`.
+
+> **Objectif du document** : fournir un fichier `README.md` prêt à placer dans un dépôt GitHub contenant :
+>
+> * Présentation synthétique du dataset (qui / quoi / quand / où / pourquoi),
+> * Instructions d'import dans Google Colab / GitHub,
+> * Notebook / snippets Python (pandas + matplotlib) pour reproduire un EDA complet, des statistiques descriptives, et des graphiques utiles pour l'analyse des recommandations,
+> * Conseils méthodologiques et limites à garder à l'esprit.
+
+---
+
+## 0. Résumé rapide (Who — What — When — Where — Why)
+
+* **Qui** : ZZAlpha Ltd. — données déposées par Kevin L. Pratt (Chief Scientist).
+* **Quoi** : Recommandations boursières générées par un système de machine learning (signals d'achat/vente) pour divers portefeuilles sur actions US.
+* **Quand (période couverte)** : 1er janvier 2012 — 31 décembre 2014 (ensemble des recommandations quotidiennes).
+* **Où** : UCI Machine Learning Repository (DOI ci‑dessus). Copie disponible sur Kaggle et archives personnelles de ZZAlpha.
+* **Pourquoi / utilité** : étudier la performance ex-post des recommandations ML (backtest à horizon 5 jours), tester méthodes d'évaluation (Proof Protocol), entraîner ou comparer modèles, enseignement et recherche.
+
+---
+
+## 1. Contenu du dépôt de données
+
+Fichiers (téléchargés originellement depuis UCI) :
+
+* `sNewsListWResults2012.zip` (6.3 Mo)
+* `sNewsListWResults2013.zip` (6.3 Mo)
+* `sNewsListWResults2014.zip` (6.1 Mo)
+
+Chaque fichier journalier contient : date de recommandation, portefeuille, taille, position (LONG/SHORT), liste des tickers recommandés, scores/ratios et le résultat observé (cours d'ouverture du jour vs cours d'ouverture 5 jours plus tard). Les prix ont été ajustés au moment du calcul des résultats.
+
+**Remarque** : les attributs originaux utilisés par ZZAlpha pour produire les signaux ne sont pas fournis (seuls les signaux + résultats ex-post le sont).
+
+---
+
+## 2. Licence & citation
+
+* Licence : **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
+* Citation recommandée :
+
+```
+Pratt, K. (2015). Machine Learning based ZZAlpha Ltd. Stock Recommendations 2012-2014 [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C59W3S
+```
+
+---
+
+## 3. Structure recommandée du dépôt GitHub
+
+```
+ZZAlpha-README/
+├─ README.md               # (Ce fichier)
+├─ data/
+│  ├─ sNewsListWResults2012.zip
+│  ├─ sNewsListWResults2013.zip
+│  └─ sNewsListWResults2014.zip
+├─ notebooks/
+│  ├─ 01_EDA_ZZAlpha.ipynb  # Notebook Colab / Jupyter (EDA + graphiques)
+│  ├─ 02_Backtest_simple.ipynb
+│  └─ utils.py
+└─ LICENSE
+```
+
+---
+
+## 4. Instructions pour Google Colab
+
+### Option A — Utiliser `ucimlrepo` (si disponible) :
+
+```python
+!pip install ucimlrepo
+from ucimlrepo import fetch_ucirepo
+# identifiant du dataset UCI ; (exemple) -- consulter doc ucimlrepo
+dataset = fetch_ucirepo('Machine Learning based ZZAlpha Ltd Stock Recommendations 2012-2014')
+# adapter selon l'API
+```
+
+### Option B — Charger les zip depuis le dépôt GitHub (recommandé si vous push les zips) :
+
+```python
+# depuis Colab: monter le dépôt GitHub (ou utiliser raw.githubusercontent URL)
+# exemple si les zips sont dans le repo :
+!wget -q https://raw.githubusercontent.com/<votre‑user>/<votre‑repo>/main/data/sNewsListWResults2012.zip -O /content/sNewsListWResults2012.zip
+!unzip -q /content/sNewsListWResults2012.zip -d /content/zzalpha/2012
+```
+
+---
+
+## 5. Notebook : Examen exploratoire (EDA) — `01_EDA_ZZAlpha.ipynb`
+
+Le bloc suivant est prêt à coller dans un notebook Colab. Il réalise :
+
+* lecture et parsing des fichiers journaliers (format texte décrit dans la fiche),
+* nettoyage et mise en forme (colonne `date`, `portfolio`, `size`, `position`, `tickers`, `result_mean`, etc.),
+* statistiques descriptives, comptage des valeurs manquantes,
+* répartition classe (+/-) par portefeuille et par taille,
+* backtest simple : rendement moyen à 5 jours, courbe cumulée.
+
+> **Important** : la fiche UCI indique que l'utilisateur doit implémenter son propre parseur pour les lignes — le code ci‑dessous fournit un parseur robuste basé sur regex et heuristiques.
+
+```python
+# === 0. Imports ===
+import os, re, glob
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# === 1. Parser d'une ligne brute ===
+# Exemple de ligne (voir description UCI):
+# 2012-01-03 Big_100_5_LONG_SHORT_F.pdf, L, AA 0,959 = 25,97/27,09, AMAT 0,950 = 14,70/15,46, ... , Moyenne de 5 = 0,963
+
+line_re = re.compile(r"^(?P<date>\d{4}-\d{2}-\d{2})\s+(?P<portfolio>[^,]+),\s*(?P<pos>[LS])[,\s]*(?P<rest>.*)$")
+
+def parse_line(line):
+    m = line_re.match(line.strip())
+    if not m:
+        return None
+    date = m.group('date')
+    portfolio = m.group('portfolio').strip()
+    pos = m.group('pos')
+    rest = m.group('rest')
+    # extraire paires "TICKER score = sellprice/buyprice"
+    # on capture la moyenne finale si présente
+    tickers = []
+    # pattern for ticker blocks like: "AA 0,959 = 25,97/27,09"
+    block_re = re.compile(r"([A-Z0-9\.]{1,6})\s+([0-9,\.]+)\s*=\s*([0-9,\.]+)/([0-9,\.]+)")
+    for b in block_re.finditer(rest):
+        ticker = b.group(1)
+        score = float(b.group(2).replace(',','.'))
+        sell = float(b.group(3).replace(',','.'))
+        buy = float(b.group(4).replace(',','.'))
+        tickers.append({'ticker':ticker,'score':score,'sell':sell,'buy':buy})
+    # try to extract mean if present
+    mean_re = re.search(r"Moyenne.*?([0-9,\.]+)")
+    mean = float(mean_re.group(1).replace(',','.')) if mean_re else None
+    return {'date':date,'portfolio':portfolio,'position':('LONG' if pos=='L' else 'SHORT'),'tickers':tickers,'mean_score':mean}
+
+# === 2. Read files (assume unzipped into /content/zzalpha/YYYY/* ) ===
+
+def load_all_txt(root_dir):
+    rows = []
+    for filepath in glob.glob(os.path.join(root_dir,'**','*.txt'), recursive=True):
+        with open(filepath,'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                if line.strip():
+                    parsed = parse_line(line)
+                    if parsed:
+                        rows.append(parsed)
+    return rows
+
+# === 3. Normalize to DataFrame (one row per recommended ticker) ===
+
+def expand_rows(rows):
+    recs = []
+    for r in rows:
+        for t in r['tickers']:
+            recs.append({
+                'date': pd.to_datetime(r['date']),
+                'portfolio': r['portfolio'],
+                'position': r['position'],
+                'ticker': t['ticker'],
+                'score': t['score'],
+                'sell': t['sell'],
+                'buy': t['buy'],
+                'mean_score': r['mean_score']
+            })
+    return pd.DataFrame(recs)
+
+# === 4. Exemple d'utilisation ===
+# Après avoir unzip les fichiers dans /content/zzalpha/2012,2013,2014
+# rows = load_all_txt('/content/zzalpha')
+# df = expand_rows(rows)
+# print(df.head())
+```
+
+### Statistiques et graphiques (code prêt)
+
+```python
+# Statistiques globales
+print('Nombre total de recommandations (lignes) :', len(df))
+print('Nombre de tickers uniques :', df['ticker'].nunique())
+print('Période :', df['date'].min(), '-', df['date'].max())
+
+# Distribution par position
+print(df['position'].value_counts())
+
+# Répartition par portefeuille
+print(df['portfolio'].value_counts().head(20))
+
+# Missing values
+print(df.isnull().sum())
+
+# Histogramme des scores
+plt.figure(figsize=(8,4))
+plt.hist(df['score'].dropna(), bins=50)
+plt.title('Distribution des scores de recommandation')
+plt.xlabel('Score')
+plt.ylabel('Count')
+plt.show()
+
+# Nombre de recommandations par jour (série temporelle)
+series = df.groupby('date').size()
+plt.figure(figsize=(10,4))
+series.plot()
+plt.title('Nombre de recommandations par jour')
+plt.ylabel('Count')
+plt.show()
+```
+
+---
+
+## 6. Analyse de performance simple (Backtest naïf à 5 jours)
+
+Le dataset contient déjà le prix d'ouverture à la date de recommandation et à J+5 (ou un ratio). On peut calculer :
+
+* rendement_i = (open_Jplus5 / open_today) - 1  (ou selon les colonnes fournies)
+* pour les positions LONG on prend rendement, pour SHORT on prend -rendement
+* metrics : rendement moyen par portefeuille, taux de réussite (rendement>0), drawdown simple, rendement cumulé en investissant 1 unité dans chaque recommandation.
+
+```python
+# suppose df possède colonnes 'buy' (open today) et 'sell' (open J+5) selon parse
+# compute simple return
+df['return_5d'] = df['sell'] / df['buy'] - 1.0
+# adjust for SHORT
+df['signed_return'] = np.where(df['position']=='LONG', df['return_5d'], -df['return_5d'])
+
+# metrics
+perf_by_port = df.groupby('portfolio')['signed_return'].agg(['count','mean','median', lambda x: (x>0).mean()])
+perf_by_port.columns = ['count','mean_return','median_return','win_rate']
+print(perf_by_port.sort_values('mean_return', ascending=False).head(20))
+
+# cumulative P&L assuming equal weight per recommendation, daily aggregated
+daily = df.groupby('date')['signed_return'].mean().sort_index()
+cum = (1+daily).cumprod()
+plt.figure(figsize=(10,5))
+plt.plot(cum)
+plt.title('Backtest naïf: capital cumulée (investir 1 unité par jour)')
+plt.ylabel('Cumulative capital')
+plt.show()
+```
+
+**Attention méthodologique** : ce backtest est **naïf** — il ne tient pas compte des frais de transaction, de la taille réelle du portefeuille, du slippage, des contraintes d'implémentation, ni du fait que les recommandations peuvent être dupliquées entre portefeuilles.
+
+---
+
+## 7. Analyses avancées suggérées
+
+* Évaluer la **robustesse temporelle** (rolling-window performance).
+* Mesurer l'effet de la **taille du portefeuille** (1,2,5,10,20) sur le rendement.
+* Tester sélectivement les **portefeuilles LONG vs SHORT**.
+* Ajuster la performance pour des **frais de transaction** (ex: 0.1%–0.5% par trade) et le **turnover**.
+* Vérifier la présence de **survivorship bias** (comparer tickers listés vs historiques d'existence).
+* Reproduire l'approche du **Proof Protocol** pour garantir l'absence de look-ahead.
+
+---
+
+## 8. Graphes recommandés à produire dans Colab
+
+1. Histogramme des scores
+2. Série temporelle du nombre de recommandations par jour
+3. Heatmap (portfolios × mean_return)
+4. Courbe cumulative de P&L (naïve)
+5. Boxplots des retours 5j par taille de portefeuille
+6. Win-rate par portefeuille et par taille
+
+Chaque graphique peut être produit avec le code matplotlib inclus dans la section EDA/backtest.
+
+---
+
+## 9. Conseils pour GitHub
+
+* Ne commitez pas les fichiers `.p7s` certifiés (si obtenus) sans vérifier la confidentialité ; le dataset UCI est déjà public.
+* Ajoute un `LICENSE` (CC BY 4.0) et un `CITATION.cff` si tu veux faciliter la citation.
+* Ajoute un petit `CONTRIBUTING.md` si tu veux que des collaborateurs poussent des notebooks.
+
+---
+
+## 10. Annexes utiles
+
+* Lien UCI : [https://archive.ics.uci.edu/ml/datasets/Machine+Learning+based+ZZAlpha+Ltd+Stock+Recommendations+2012-2014](https://archive.ics.uci.edu/ml/datasets/Machine+Learning+based+ZZAlpha+Ltd+Stock+Recommendations+2012-2014)
+* DOI : `10.24432/C59W3S`
+
+---
+
+*Fini.*
+
+*Si tu veux, je peux :*
+
+* créer directement le notebook `01_EDA_ZZAlpha.ipynb` et le placer dans le dépôt (format `.ipynb`),
+* exécuter le parsing et produire quelques graphiques à partir du fichier ZIP que tu as uploadé pour que tu récupères les images prêtes à l'emploi.
+
+Dis‑moi ce que tu préfères.
 
