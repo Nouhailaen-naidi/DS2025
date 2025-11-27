@@ -1,7 +1,6 @@
 # 📊 **Rapport d'Analyse – Comportement d'Investissement des Particuliers**
 
 > 🔗 **Source des données** : [Kaggle – Finance Data (nitindatta/finance-data)](https://www.kaggle.com/datasets/nitindatta/finance-data)  
-> ⚠️ **Note** : Le fichier analysé ici (`Finance_data (2).csv`) correspond à un **jeu de données synthétique de type enquête comportementale**, probablement dérivé ou adapté à partir de la source Kaggle originale. Il ne contient pas de séries temporelles boursières, mais des **réponses à un questionnaire sur les préférences d'investissement**.
 
 ---
 
