@@ -1,25 +1,28 @@
-# 📊 Rapport d’Analyse Financière — Dataset “Finance Data”
+# 📊 **Rapport d’Analyse Financière — Dataset “Finance Data”**
 
-## 📑 Sommaire
-- [Introduction](#introduction)
-- [Description du dataset](#description-du-dataset)
-- [Objectifs de l’étude](#objectifs-de-letude)
-- [Chargement et préparation des données](#chargement-et-preparation-des-donnees)
-- [Analyse exploratoire (EDA)](#analyse-exploratoire-eda)
-  - 5.1 Statistiques générales
-  - 5.2 Corrélation entre variables
-  - 5.3 Volatilité des prix
-  - 5.4 Rendements journaliers
-- [Visualisations](#visualisations)
-- [Interprétation des résultats](#interpretation-des-resultats)
-- [Conclusion](#conclusion)
+## 📑 **Sommaire**
+
+1. [Introduction](#introduction)
+2. [Description du dataset](#description-du-dataset)
+3. [Objectifs de l’étude](#objectifs-de-létude)
+4. [Chargement et préparation des données](#chargement-et-préparation-des-données)
+5. [Analyse exploratoire (EDA)](#analyse-exploratoire-eda)
+   - 5.1 Statistiques générales
+   - 5.2 Corrélation entre variables
+   - 5.3 Volatilité des prix
+   - 5.4 Rendements journaliers
+6. [Visualisations](#visualisations)
+7. [Interprétation des résultats](#interprétation-des-résultats)
+8. [Conclusion](#conclusion)
 
 ---
 
-## 🟦 Introduction
+# 🟦 **Introduction**
+
 Le domaine de la finance moderne repose sur l’analyse de données massives afin d’anticiper les mouvements des marchés, comprendre le comportement des actifs et améliorer la prise de décision.  
-Le dataset utilisé provient de Kaggle : “Finance Data”, contenant plusieurs séries temporelles financières (prix, volumes, dates…).  
-Ce rapport présente une analyse complète, incluant :  
+Le dataset utilisé provient de **Kaggle : “Finance Data”**, contenant plusieurs séries temporelles financières (prix, volumes, dates…).
+
+Ce rapport présente une **analyse complète**, incluant :
 - L’exploration du dataset  
 - Des statistiques descriptives  
 - Des graphiques financiers  
@@ -27,19 +30,22 @@ Ce rapport présente une analyse complète, incluant :
 
 ---
 
-## 🟦 Description du dataset
-Le dataset contient généralement les colonnes suivantes (à adapter selon ton fichier exact) :  
-- Date — date de cotation  
-- Open — prix d’ouverture  
-- High — prix le plus haut  
-- Low — prix le plus bas  
-- Close — prix de clôture  
-- Adj Close — prix ajusté  
-- Volume — volume des transactions  
+# 🟦 **Description du dataset**
+
+Le dataset contient généralement les colonnes suivantes (à adapter selon ton fichier exact) :
+
+- `Date` — date de cotation  
+- `Open` — prix d’ouverture  
+- `High` — prix le plus haut  
+- `Low` — prix le plus bas  
+- `Close` — prix de clôture  
+- `Adj Close` — prix ajusté  
+- `Volume` — volume des transactions  
 
 ---
 
-## 🟦 Objectifs de l’étude
+# 🟦 **Objectifs de l’étude**
+
 - Comprendre l’évolution des prix financiers  
 - Analyser la volatilité  
 - Étudier les corrélations entre variables  
@@ -48,6 +54,32 @@ Le dataset contient généralement les colonnes suivantes (à adapter selon ton 
 
 ---
 
-## 🟦 Chargement et préparation des données
+# 🟦 **Chargement et préparation des données**
 
+```python
+# ===========================================
+# 1. INSTALLATION & IMPORTATION DES LIBRAIRIES
+# ===========================================
 
+# pip install kagglehub[pandas-datasets]
+import kagglehub
+from kagglehub import KaggleDatasetAdapter
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ===========================================
+# 2. CHARGEMENT DU DATASET KAGGLE
+# ===========================================
+
+file_path = ""   # mettre le nom du fichier si nécessaire
+
+df = kagglehub.load_dataset(
+  KaggleDatasetAdapter.PANDAS,
+  "nitindatta/finance-data",
+  file_path
+)
+
+print("Aperçu des 5 premières lignes :")
+df.head()
