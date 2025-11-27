@@ -1,85 +1,89 @@
-# 📊 **Rapport d’Analyse Financière — Dataset “Finance Data”**
+# 📊 **Rapport d’Analyse – Comportement d’Investissement des Particuliers**
 
 ## 📑 **Sommaire**
 
 1. [Introduction](#introduction)
-2. [Description du dataset](#description-du-dataset)
-3. [Objectifs de l’étude](#objectifs-de-létude)
-4. [Chargement et préparation des données](#chargement-et-préparation-des-données)
-5. [Analyse exploratoire (EDA)](#analyse-exploratoire-eda)
-   - 5.1 Statistiques générales
-   - 5.2 Corrélation entre variables
-   - 5.3 Volatilité des prix
-   - 5.4 Rendements journaliers
-6. [Visualisations](#visualisations)
-7. [Interprétation des résultats](#interprétation-des-résultats)
-8. [Conclusion](#conclusion)
+2. [Description du Dataset](#description-du-dataset)
+3. [Objectifs de l’Analyse](#objectifs-de-lanalyse)
+4. [Chargement & Préparation des Données](#chargement--préparation-des-données)
+5. [Analyse Exploratoire (EDA)](#analyse-exploratoire-eda)
+   - 5.1 Répartition par genre et âge
+   - 5.2 Avenues d’investissement préférées
+   - 5.3 Facteurs influençant les décisions
+   - 5.4 Objectifs et durées d’investissement
+   - 5.5 Sources d’information
+6. [Interprétations & Insights](#interprétations--insights)
+7. [Conclusion](#conclusion)
 
 ---
 
-# 🟦 **Introduction**
+## 📘 **Introduction**
 
-Le domaine de la finance moderne repose sur l’analyse de données massives afin d’anticiper les mouvements des marchés, comprendre le comportement des actifs et améliorer la prise de décision.  
-Le dataset utilisé provient de **Kaggle : “Finance Data”**, contenant plusieurs séries temporelles financières (prix, volumes, dates…).
+Ce rapport analyse un **jeu de données sur les comportements d’investissement de particuliers**, collecté via un questionnaire. Il explore :
 
-Ce rapport présente une **analyse complète**, incluant :
-- L’exploration du dataset  
-- Des statistiques descriptives  
-- Des graphiques financiers  
-- L’interprétation de chaque visualisation  
+- les **préférences d’investissement** (actions, fonds communs, PPF, or, etc.),
+- les **facteurs clés de décision** (rendement, risque, liquidité…),
+- les **objectifs financiers** (retraite, santé, éducation…),
+- les **sources d’information** utilisées (consultants, TV, internet…).
 
----
-
-# 🟦 **Description du dataset**
-
-Le dataset contient généralement les colonnes suivantes (à adapter selon ton fichier exact) :
-
-- `Date` — date de cotation  
-- `Open` — prix d’ouverture  
-- `High` — prix le plus haut  
-- `Low` — prix le plus bas  
-- `Close` — prix de clôture  
-- `Adj Close` — prix ajusté  
-- `Volume` — volume des transactions  
+L’objectif est de **comprendre les profils types d’investisseurs**, identifier les leviers de motivation, et proposer des **recommandations marketing ou éducatives** dans le domaine de la finance personnelle.
 
 ---
 
-# 🟦 **Objectifs de l’étude**
+## 📁 **Description du Dataset**
 
-- Comprendre l’évolution des prix financiers  
-- Analyser la volatilité  
-- Étudier les corrélations entre variables  
-- Visualiser les tendances  
-- Préparer une base utilisable pour du Machine Learning (LSTM, ARIMA, etc.)  
+Le fichier `Finance_data (2).csv` contient **40 observations** avec les colonnes suivantes :
+
+| Variable | Description |
+|--------|------------|
+| `gender` | Genre du répondant |
+| `age` | Âge en années |
+| `Investment_Avenues` | Investit-il ou non ? (Yes/No) |
+| `Mutual_Funds`, `Equity_Market`, `Debentures`, etc. | Classement (1 = préféré) des différentes options |
+| `Factor` | Facteur principal dans la décision : *Returns* ou *Risk* |
+| `Objective` | Objectif principal : *Growth*, *Income*, *Capital Appreciation* |
+| `Purpose` | But de l’épargne : *Wealth Creation*, *Savings for Future*, etc. |
+| `Duration` | Horizon d’investissement |
+| `Invest_Monitor` | Fréquence de suivi |
+| `Expect` | Taux de rendement attendu |
+| `Avenue` | Canal ou produit préféré |
+| `What are your savings objectives?` | Objectif spécifique (Retraite, Santé, Éducation…) |
+| `Reason_Equity`, `Reason_Mutual`, etc. | Motivations par type d’actif |
+| `Source` | Source d’information financière |
+
+> ⚠️ Ce dataset **n’est pas le même** que le "Finance Data" de Kaggle (`nitindatta/finance-data`). Il s’agit d’un **sondage qualitatif/quantitatif sur les comportements d’investissement**.
 
 ---
 
-# 🟦 **Chargement et préparation des données**
+## 🎯 **Objectifs de l’Analyse**
+
+- Identifier les **profils d’investisseurs dominants**.
+- Comprendre les **motivations derrière les choix d’actifs**.
+- Évaluer l’**influence du genre, de l’âge et de la source d’info**.
+- Proposer des **recommandations personnalisées** (marketing, conseil financier).
+
+---
+
+## 🔧 **Chargement & Préparation des Données**
+
+> 💡 Ce code suppose que `Finance_data (2).csv` est dans le même dossier que le notebook/script.
 
 ```python
-# ===========================================
-# 1. INSTALLATION & IMPORTATION DES LIBRAIRIES
-# ===========================================
+# ============================================================
+# ANALYSE FINANCIÈRE – COMPORTEMENT D’INVESTISSEMENT
+# ============================================================
 
-# pip install kagglehub[pandas-datasets]
-import kagglehub
-from kagglehub import KaggleDatasetAdapter
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# ===========================================
-# 2. CHARGEMENT DU DATASET KAGGLE
-# ===========================================
+sns.set(style="whitegrid")
+plt.rcParams['figure.figsize'] = (10, 6)
 
-file_path = ""   # mettre le nom du fichier si nécessaire
+# Charger le dataset fourni
+df = pd.read_csv("Finance_data (2).csv")
 
-df = kagglehub.load_dataset(
-  KaggleDatasetAdapter.PANDAS,
-  "nitindatta/finance-data",
-  file_path
-)
-
-print("Aperçu des 5 premières lignes :")
+# Aperçu
+print("✅ Données chargées –", df.shape[0], "lignes et", df.shape[1], "colonnes")
 df.head()
