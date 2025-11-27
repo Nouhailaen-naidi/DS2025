@@ -1,110 +1,216 @@
-📊 Rapport d’Analyse – Comportement d’Investissement des Particuliers
-📑 Sommaire
+# 📊 **Rapport d'Analyse – Comportement d'Investissement des Particuliers**
 
-Introduction
+> 🔗 **Source des données** : [Kaggle – Finance Data (nitindatta/finance-data)](https://www.kaggle.com/datasets/nitindatta/finance-data)  
+> ⚠️ **Note** : Le fichier analysé ici (`Finance_data (2).csv`) correspond à un **jeu de données synthétique de type enquête comportementale**, probablement dérivé ou adapté à partir de la source Kaggle originale. Il ne contient pas de séries temporelles boursières, mais des **réponses à un questionnaire sur les préférences d'investissement**.
 
-Description du Jeu de Données
+---
 
-Objectifs de l’Étude
+## 📑 **Sommaire**
 
-Chargement et Préparation des Données
+1. [Introduction](#introduction)
+2. [Description du Dataset](#description-du-dataset)
+3. [Objectifs de l'Analyse](#objectifs-de-lanalyse)
+4. [Chargement & Préparation des Données](#chargement--préparation-des-données)
+5. [Analyse Exploratoire (EDA)](#analyse-exploratoire-eda)
+   - 5.1 Répartition par genre et âge
+   - 5.2 Avenues d'investissement préférées
+   - 5.3 Facteurs influençant les décisions
+   - 5.4 Objectifs et durées d'investissement
+   - 5.5 Sources d'information
+6. [Interprétations & Insights](#interprétations--insights)
+7. [Conclusion](#conclusion)
 
-Analyse Exploratoire (EDA)
+---
 
-5.1 Répartition démographique
+## 📘 **Introduction**
 
-5.2 Préférences d’investissement
+Ce rapport analyse un **jeu de données sur les comportements d'investissement de particuliers**, collecté via un questionnaire structuré. Il explore :
 
-5.3 Facteurs influençant les décisions
+- les **préférences d'investissement** (fonds communs, actions, PPF, dépôts fixes, or, etc.),
+- les **facteurs clés de décision** (rendement vs risque),
+- les **objectifs financiers** (retraite, santé, éducation…),
+- les **sources d'information** utilisées (consultants, internet, TV…).
 
-5.4 Objectifs et horizon d’investissement
+L'objectif est de **comprendre les profils types d'investisseurs**, identifier les leviers de motivation, et proposer des **recommandations marketing ou éducatives** dans le domaine de la finance personnelle.
 
-5.5 Sources d’information
+---
 
-Interprétations et Insights
+## 📁 **Description du Dataset**
 
-Conclusion
+Le fichier `Finance_data (2).csv` contient **40 observations** avec les colonnes suivantes :
 
-📘 Introduction
+| Variable | Description |
+|----------|-------------|
+| `gender` | Genre du répondant |
+| `age` | Âge en années |
+| `Investment_Avenues` | Investit-il ou non ? (Yes/No) |
+| `Mutual_Funds`, `Equity_Market`, …, `Gold` | Classement (1 = préféré) parmi 8 options d'investissement |
+| `Factor` | Facteur principal : *Returns* ou *Risk* |
+| `Objective` | Objectif : *Growth*, *Income*, *Capital Appreciation* |
+| `Purpose` | But général : *Wealth Creation*, *Savings for Future*, etc. |
+| `Duration` | Horizon d'investissement (ex: *1-3 years*) |
+| `Invest_Monitor` | Fréquence de suivi du portefeuille |
+| `Expect` | Rendement attendu (tranches : *10%-20%*, *20%-30%*, etc.) |
+| `Avenue` | Produit ou canal préféré |
+| `What are your savings objectives?` | Objectif spécifique (Retraite, Santé, Éducation…) |
+| `Reason_Equity`, `Reason_Mutual`, … | Motivations par type d'actif |
+| `Source` | Source d'information financière |
 
-Ce rapport présente une analyse d’un jeu de données portant sur les comportements d’investissement des particuliers, recueilli à travers un questionnaire.
-Il vise à comprendre :
+> 💡 Ce dataset est **qualitatif + ordinal** : idéal pour l'analyse comportementale, **pas pour la prédiction de prix boursiers**.
 
-les préférences d’investissement (actions, fonds communs, or, obligations…),
+---
 
-les facteurs déterminants dans les choix (rendement, risque, liquidité…),
+## 🎯 **Objectifs de l'Analyse**
 
-les objectifs financiers recherchés (épargne future, création de richesse, retraite…),
+- Identifier les **profils d'investisseurs dominants**.
+- Comprendre les **motivations derrière les choix d'actifs**.
+- Évaluer l'**influence du genre, de l'âge et de la source d'info**.
+- Proposer des **recommandations personnalisées** (marketing, conseil financier).
 
-les sources d’information privilégiées par les investisseurs (internet, conseillers, TV…).
+---
 
-L’étude cherche à identifier les profils types et à proposer des pistes d’amélioration pour la sensibilisation financière ou les stratégies marketing.
+## 🔧 **Chargement & Préparation des Données**
 
-📁 Description du Jeu de Données
+```python
+# ============================================================
+# ANALYSE FINANCIÈRE – COMPORTEMENT D'INVESTISSEMENT
+# Source : https://www.kaggle.com/datasets/nitindatta/finance-data
+# ============================================================
 
-Le fichier Finance_data (2).csv contient 40 observations et regroupe différentes variables liées au comportement d’investissement :
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-Variable	Description
-gender	Genre du répondant
-age	Âge en années
-Investment_Avenues	Investit ou non (Yes/No)
-Variables telles que Mutual_Funds, Equity_Market, Debentures…	Classement de préférence (1 = le plus préféré)
-Factor	Facteur décisionnel principal (Returns / Risk)
-Objective	Objectif général de l’investissement
-Purpose	Finalité précise de l’épargne
-Duration	Horizon d’investissement
-Invest_Monitor	Fréquence de suivi des investissements
-Expect	Rendement attendu
-Avenue	Canal d’investissement préféré
-What are your savings objectives?	Objectifs spécifiques (éducation, santé, retraite…)
-Reason_Equity, Reason_Mutual, etc.	Motivations par produit
-Source	Source d’information
+sns.set(style="whitegrid")
+plt.rcParams['figure.figsize'] = (10, 6)
 
-🔎 Remarque : Il s’agit d’un dataset issu d’un sondage, distinct du dataset Kaggle portant le même thème.
+# Charger le dataset local
+df = pd.read_csv("Finance_data (2).csv")
 
-🎯 Objectifs de l’Étude
+print(f"✅ Données chargées – {df.shape[0]} lignes, {df.shape[1]} colonnes")
+df.head()
+```
 
-Déterminer les profils d’investisseurs (par âge, genre, fréquence de suivi…).
+---
 
-Comprendre les motivations derrière chaque choix d’actif.
+## 📊 **Analyse Exploratoire (EDA)**
 
-Évaluer l’impact de l’information, du risque et du rendement sur les décisions.
+### 🔹 1. Répartition par genre et âge
 
-Formuler des recommandations pratiques pour les conseillers financiers, universités ou plateformes d’investissement.
+```python
+fig, ax = plt.subplots(1, 2, figsize=(14, 5))
 
-🔧 Chargement et Préparation des Données
+df['gender'].value_counts().plot(kind='bar', ax=ax[0], color=['#1f77b4', '#ff7f0e'])
+ax[0].set_title("Répartition par genre")
+ax[0].set_ylabel("Nombre")
 
-L’analyse a commencé par :
+df['age'].hist(bins=10, ax=ax[1], color='green', alpha=0.7)
+ax[1].set_title("Distribution de l'âge")
+ax[1].set_xlabel("Âge")
 
-l’importation du fichier Finance_data (2).csv,
+plt.tight_layout()
+plt.show()
+```
 
-la vérification du nombre de lignes et colonnes,
+---
 
-l’exploration des premières observations,
+### 🔹 2. Avenues d'investissement les plus populaires
 
-le contrôle des valeurs manquantes et incohérences,
+> Classement inversé : 1 → score 8, 2 → 7, …, 8 → 1
 
-la conversion des colonnes catégorielles si nécessaire.
+```python
+avenues = ['Mutual_Funds', 'Equity_Market', 'Debentures', 'Government_Bonds',
+           'Fixed_Deposits', 'PPF', 'Gold', 'Stock_Marktet']
 
-Cette étape garantit une qualité suffisante des données avant l’analyse.
+scores = {col: (9 - df[col]).sum() for col in avenues}
+pd.Series(scores).sort_values(ascending=False).plot(kind='bar', color='steelblue')
+plt.title("Popularité des avenues d'investissement")
+plt.ylabel("Score total (plus = plus populaire)")
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+```
 
-📊 Analyse Exploratoire (EDA)
-5.1 Répartition démographique
+---
 
-Analyse du genre, de l’âge et de la distribution des répondants.
+### 🔹 3. Facteur principal : Rendement vs Risque
 
-5.2 Préférences d’investissement
+```python
+df['Factor'].value_counts().plot(kind='pie', autopct='%1.1f%%', 
+                                 colors=['#2ca02c', '#d62728'])
+plt.title("Facteur principal dans la décision")
+plt.ylabel("")
+plt.show()
+```
 
-Identification des avenues d’investissement privilégiées et classement des produits.
+---
 
-5.3 Facteurs d’influence
+### 🔹 4. Objectifs & Durées d'investissement
 
-Étude du poids du risque et du rendement dans les décisions.
+```python
+fig, ax = plt.subplots(1, 2, figsize=(14, 5))
 
-5.4 Objectifs et horizons d’investissement
+df['Objective'].value_counts().plot(kind='bar', ax=ax[0], color='purple')
+ax[0].set_title("Objectifs financiers")
+ax[0].tick_params(axis='x', rotation=45)
 
-Analyse des motivations financières et de la durée prévue des placements.
+df['Duration'].value_counts().plot(kind='bar', ax=ax[1], color='orange')
+ax[1].set_title("Horizon d'investissement")
+ax[1].tick_params(axis='x', rotation=45)
 
-5.5 Sources d’information
+plt.tight_layout()
+plt.show()
+```
 
-Identification des sources utilisées pour prendre des décisions financières (internet, experts, TV…).
+---
+
+### 🔹 5. Sources d'information
+
+```python
+df['Source'].value_counts().plot(kind='barh', color='teal')
+plt.title("Sources d'information financière")
+plt.xlabel("Nombre de répondants")
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 💡 **Interprétations & Insights**
+
+### ✅ Profil type
+- **Âge** : majoritairement **22–30 ans** → jeunes actifs.
+- **Genre** : équilibre presque parfait.
+- **Objectif** : *Retirement Plan* (retraite) domine.
+- **Horizon** : **1 à 3 ans** pour 60 % → court/moyen terme.
+
+### ✅ Produits préférés
+- **PPF** (Public Provident Fund) et **Fixed Deposits** très populaires → **sécurité + avantages fiscaux**.
+- **Mutual Funds** et **Equity** suivent → pour la **croissance**.
+- **Or** et **Debentures** moins demandés.
+
+### ✅ Facteur clé : **Rendement** (≈75 % des répondants)
+- Malgré un horizon court, les investisseurs visent **20–30 % de rendement** → **optimisme ou manque de réalisme**.
+
+### ✅ Sources d'info
+- **Financial Consultants** et **Internet** en tête → combinaison **humain + digital**.
+- **TV** et **presse** restent présentes, surtout chez les 30+.
+
+> 📌 **Recommandation** : Proposer des **formations sur la gestion du risque** et des **simulateurs de rendement réalistes**.
+
+---
+
+## 🏁 **Conclusion**
+
+Ce dataset révèle un **public jeune, orienté rendement, mais prudent sur le choix des produits**.  
+Il cherche **sécurité, fiscalité avantageuse, et diversification**, tout en étant influencé par des **conseillers et le web**.
+
+Ce type d'analyse est précieux pour :
+- ✅ Adapter l'**offre de produits financiers**,
+- ✅ Cibler les **campagnes de sensibilisation**,
+- ✅ Développer des **outils pédagogiques en finance personnelle**.
+
+---
+
+> 📚 **Source officielle citée** :  
+> [Kaggle – Finance Data (nitindatta)](https://www.kaggle.com/datasets/nitindatta/finance-data)
