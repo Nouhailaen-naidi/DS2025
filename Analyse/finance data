@@ -1,89 +1,110 @@
-# 📊 **Rapport d’Analyse – Comportement d’Investissement des Particuliers**
+📊 Rapport d’Analyse – Comportement d’Investissement des Particuliers
+📑 Sommaire
 
-## 📑 **Sommaire**
+Introduction
 
-1. [Introduction](#introduction)
-2. [Description du Dataset](#description-du-dataset)
-3. [Objectifs de l’Analyse](#objectifs-de-lanalyse)
-4. [Chargement & Préparation des Données](#chargement--préparation-des-données)
-5. [Analyse Exploratoire (EDA)](#analyse-exploratoire-eda)
-   - 5.1 Répartition par genre et âge
-   - 5.2 Avenues d’investissement préférées
-   - 5.3 Facteurs influençant les décisions
-   - 5.4 Objectifs et durées d’investissement
-   - 5.5 Sources d’information
-6. [Interprétations & Insights](#interprétations--insights)
-7. [Conclusion](#conclusion)
+Description du Jeu de Données
 
----
+Objectifs de l’Étude
 
-## 📘 **Introduction**
+Chargement et Préparation des Données
 
-Ce rapport analyse un **jeu de données sur les comportements d’investissement de particuliers**, collecté via un questionnaire. Il explore :
+Analyse Exploratoire (EDA)
 
-- les **préférences d’investissement** (actions, fonds communs, PPF, or, etc.),
-- les **facteurs clés de décision** (rendement, risque, liquidité…),
-- les **objectifs financiers** (retraite, santé, éducation…),
-- les **sources d’information** utilisées (consultants, TV, internet…).
+5.1 Répartition démographique
 
-L’objectif est de **comprendre les profils types d’investisseurs**, identifier les leviers de motivation, et proposer des **recommandations marketing ou éducatives** dans le domaine de la finance personnelle.
+5.2 Préférences d’investissement
 
----
+5.3 Facteurs influençant les décisions
 
-## 📁 **Description du Dataset**
+5.4 Objectifs et horizon d’investissement
 
-Le fichier `Finance_data (2).csv` contient **40 observations** avec les colonnes suivantes :
+5.5 Sources d’information
 
-| Variable | Description |
-|--------|------------|
-| `gender` | Genre du répondant |
-| `age` | Âge en années |
-| `Investment_Avenues` | Investit-il ou non ? (Yes/No) |
-| `Mutual_Funds`, `Equity_Market`, `Debentures`, etc. | Classement (1 = préféré) des différentes options |
-| `Factor` | Facteur principal dans la décision : *Returns* ou *Risk* |
-| `Objective` | Objectif principal : *Growth*, *Income*, *Capital Appreciation* |
-| `Purpose` | But de l’épargne : *Wealth Creation*, *Savings for Future*, etc. |
-| `Duration` | Horizon d’investissement |
-| `Invest_Monitor` | Fréquence de suivi |
-| `Expect` | Taux de rendement attendu |
-| `Avenue` | Canal ou produit préféré |
-| `What are your savings objectives?` | Objectif spécifique (Retraite, Santé, Éducation…) |
-| `Reason_Equity`, `Reason_Mutual`, etc. | Motivations par type d’actif |
-| `Source` | Source d’information financière |
+Interprétations et Insights
 
-> ⚠️ Ce dataset **n’est pas le même** que le "Finance Data" de Kaggle (`nitindatta/finance-data`). Il s’agit d’un **sondage qualitatif/quantitatif sur les comportements d’investissement**.
+Conclusion
 
----
+📘 Introduction
 
-## 🎯 **Objectifs de l’Analyse**
+Ce rapport présente une analyse d’un jeu de données portant sur les comportements d’investissement des particuliers, recueilli à travers un questionnaire.
+Il vise à comprendre :
 
-- Identifier les **profils d’investisseurs dominants**.
-- Comprendre les **motivations derrière les choix d’actifs**.
-- Évaluer l’**influence du genre, de l’âge et de la source d’info**.
-- Proposer des **recommandations personnalisées** (marketing, conseil financier).
+les préférences d’investissement (actions, fonds communs, or, obligations…),
 
----
+les facteurs déterminants dans les choix (rendement, risque, liquidité…),
 
-## 🔧 **Chargement & Préparation des Données**
+les objectifs financiers recherchés (épargne future, création de richesse, retraite…),
 
-> 💡 Ce code suppose que `Finance_data (2).csv` est dans le même dossier que le notebook/script.
+les sources d’information privilégiées par les investisseurs (internet, conseillers, TV…).
 
-```python
-# ============================================================
-# ANALYSE FINANCIÈRE – COMPORTEMENT D’INVESTISSEMENT
-# ============================================================
+L’étude cherche à identifier les profils types et à proposer des pistes d’amélioration pour la sensibilisation financière ou les stratégies marketing.
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+📁 Description du Jeu de Données
 
-sns.set(style="whitegrid")
-plt.rcParams['figure.figsize'] = (10, 6)
+Le fichier Finance_data (2).csv contient 40 observations et regroupe différentes variables liées au comportement d’investissement :
 
-# Charger le dataset fourni
-df = pd.read_csv("Finance_data (2).csv")
+Variable	Description
+gender	Genre du répondant
+age	Âge en années
+Investment_Avenues	Investit ou non (Yes/No)
+Variables telles que Mutual_Funds, Equity_Market, Debentures…	Classement de préférence (1 = le plus préféré)
+Factor	Facteur décisionnel principal (Returns / Risk)
+Objective	Objectif général de l’investissement
+Purpose	Finalité précise de l’épargne
+Duration	Horizon d’investissement
+Invest_Monitor	Fréquence de suivi des investissements
+Expect	Rendement attendu
+Avenue	Canal d’investissement préféré
+What are your savings objectives?	Objectifs spécifiques (éducation, santé, retraite…)
+Reason_Equity, Reason_Mutual, etc.	Motivations par produit
+Source	Source d’information
 
-# Aperçu
-print("✅ Données chargées –", df.shape[0], "lignes et", df.shape[1], "colonnes")
-df.head()
+🔎 Remarque : Il s’agit d’un dataset issu d’un sondage, distinct du dataset Kaggle portant le même thème.
+
+🎯 Objectifs de l’Étude
+
+Déterminer les profils d’investisseurs (par âge, genre, fréquence de suivi…).
+
+Comprendre les motivations derrière chaque choix d’actif.
+
+Évaluer l’impact de l’information, du risque et du rendement sur les décisions.
+
+Formuler des recommandations pratiques pour les conseillers financiers, universités ou plateformes d’investissement.
+
+🔧 Chargement et Préparation des Données
+
+L’analyse a commencé par :
+
+l’importation du fichier Finance_data (2).csv,
+
+la vérification du nombre de lignes et colonnes,
+
+l’exploration des premières observations,
+
+le contrôle des valeurs manquantes et incohérences,
+
+la conversion des colonnes catégorielles si nécessaire.
+
+Cette étape garantit une qualité suffisante des données avant l’analyse.
+
+📊 Analyse Exploratoire (EDA)
+5.1 Répartition démographique
+
+Analyse du genre, de l’âge et de la distribution des répondants.
+
+5.2 Préférences d’investissement
+
+Identification des avenues d’investissement privilégiées et classement des produits.
+
+5.3 Facteurs d’influence
+
+Étude du poids du risque et du rendement dans les décisions.
+
+5.4 Objectifs et horizons d’investissement
+
+Analyse des motivations financières et de la durée prévue des placements.
+
+5.5 Sources d’information
+
+Identification des sources utilisées pour prendre des décisions financières (internet, experts, TV…).
