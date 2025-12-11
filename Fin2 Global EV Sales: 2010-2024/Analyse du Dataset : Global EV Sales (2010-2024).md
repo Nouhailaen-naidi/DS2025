@@ -1141,3 +1141,159 @@ print("\n🎯 POUR LES CONSTRUCTEURS AUTOMOBILES")
 print("─"*80)
 print("   1. Accélérer la transition vers les BEV (100% électrique)")
 print("   2. Investir massivement en R&D battCette réponse a été interrompue car Claude a atteint sa longueur maximale de message. Cliquez sur continuer pour permettre à Claude de poursuivre.ContinuerClaude peut faire des erreurs. Assurez-vous de vérifier ses réponses.
+🧩 Nouvelle Section : Comment utiliser ce code ? (Guide d’Exécution)
+⚙️ Objectif de cette section
+
+Cette section explique comment exécuter le code fourni, dans quel environnement, et ce que fait chaque partie du script.
+Elle sert de guide pratique, surtout si tu veux partager ce rapport avec d’autres étudiants ou collègues.
+
+🛠️ Utilisation du Code : Environnement, Prérequis et Instructions
+1️⃣ Environnement Recommandé
+
+Ce code est optimisé pour être exécuté dans :
+
+Google Colab (fortement recommandé)
+
+Jupyter Notebook (Anaconda)
+
+VS Code + Python
+
+💡 Google Colab est idéal car KaggleHub y fonctionne sans configuration complexe.
+
+2️⃣ Prérequis : Installer les Dépendances
+
+Le code commence par installer toutes les bibliothèques nécessaires :
+
+kagglehub : pour importer le dataset depuis Kaggle automatiquement
+
+pandas / numpy : manipulation des données
+
+matplotlib / seaborn : visualisation
+
+scikit-learn : préparation pour la modélisation
+
+!pip install kagglehub[pandas-datasets]
+!pip install pandas numpy matplotlib seaborn scikit-learn
+
+
+👉 Tu dois exécuter ce bloc une seule fois au début du notebook.
+
+3️⃣ Structure Globale du Code
+
+Le script complet contient 7 grandes parties, chacune correspondant à une étape d’un pipeline de data science :
+
+Section	Description
+1. Installation	Installe tous les packages
+2. Importation	Charge les bibliothèques
+3. Chargement	Télécharge et lit le dataset
+4. Exploration	Vérifie la structure et la qualité
+5. Nettoyage	Crée une version propre du dataset
+6. EDA	Graphes et analyses
+7. Modélisation	Préparation pour ML
+4️⃣ Comment exécuter chaque bloc ?
+🔹 Étape 1 : Importer les bibliothèques
+import kagglehub
+from kagglehub import KaggleDatasetAdapter
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+📌 Ce bloc prépare l'espace de travail.
+
+🔹 Étape 2 : Charger le dataset depuis Kaggle
+df = kagglehub.load_dataset(
+    KaggleDatasetAdapter.PANDAS,
+    "patricklford/global-ev-sales-2010-2024",
+    ""
+)
+
+
+📌 Ce code :
+
+télécharge automatiquement les fichiers depuis Kaggle
+
+lit directement le dataset en DataFrame
+
+affiche la taille et les premières lignes
+
+👉 Pas besoin de clé API Kaggle, contrairement à l’ancienne méthode.
+
+🔹 Étape 3 : Effectuer l’exploration initiale
+
+Le code :
+
+affiche les colonnes
+
+détecte les valeurs manquantes
+
+analyse les types de variables
+
+montre les statistiques descriptives
+
+📌 Cela permet de comprendre la structure avant d'appliquer un nettoyage.
+
+🔹 Étape 4 : Nettoyer les données
+
+Dans cette partie :
+
+suppression des doublons
+
+normalisation des noms de colonnes
+
+conversion des types
+
+traitement des valeurs manquantes
+
+suppression des valeurs aberrantes
+
+création d’un dataset propre : df_clean
+
+📌 Cette étape transforme des données brutes en données fiables.
+
+🔹 Étape 5 : Visualisations et Analyse Exploratoire (EDA)
+
+Le code génère :
+
+tendances des ventes (ligne)
+
+répartition par région
+
+comparaison BEV vs PHEV
+
+relations entre variables
+
+📌 Les graphes permettent d'interpréter facilement le marché EV.
+
+🔹 Étape 6 : Préparation à la Modélisation
+
+À la fin, les données propres (df_clean) sont prêtes pour :
+
+régression
+
+séries temporelles
+
+clustering
+
+arbres de décision
+
+modèles avancés (XGBoost, Prophet, LSTM)
+
+📌 Tu n’as qu’à ajouter ton modèle après cette étape.
+
+5️⃣ Résultat Final
+
+Après l’exécution complète :
+
+df_clean = dataset nettoyé
+
+Graphiques = tendances et insights
+
+Code = prêt pour construire un modèle ML
+
+📝 Résumé de la Section
+
+✔ Ce guide t’aide à comprendre comment fonctionne chaque partie du code
+✔ Tu peux maintenant exécuter toutes les cellules dans l’ordre
+✔ Tu sais comment modifier ou étendre ce projet pour faire de la modélisation machine learning
